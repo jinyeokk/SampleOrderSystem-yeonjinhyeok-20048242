@@ -12,9 +12,11 @@ from tests.harness import TestHarness, assert_eq, assert_raises, assert_true
 
 
 def _make_services():
-    sample_repo     = SampleRepository()
-    order_repo      = OrderRepository()
-    production_repo = ProductionRepository()
+    from tests.db_helper import make_test_conn
+    conn            = make_test_conn()
+    sample_repo     = SampleRepository(conn)
+    order_repo      = OrderRepository(conn)
+    production_repo = ProductionRepository(conn)
     sample_svc      = SampleService(sample_repo)
     order_svc       = OrderService(order_repo, production_repo, sample_svc)
     return sample_svc, order_svc, production_repo

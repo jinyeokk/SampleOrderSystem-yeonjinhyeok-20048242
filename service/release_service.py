@@ -26,6 +26,7 @@ class ReleaseService:
         order.released_at = datetime.now()
         order.updated_at = datetime.now()
         self._order_repo.record_history(order_id, "CONFIRMED → RELEASE")
+        self._order_repo.save(order)
         return order
 
     def release_bulk(self, order_ids: list[str]) -> list[Order]:

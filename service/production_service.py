@@ -47,8 +47,10 @@ class ProductionService:
 
         queue.status = QueueStatus.DONE
         queue.produced_qty = queue.required_qty
+        self._production_repo.save(queue)
 
         order.status = OrderStatus.CONFIRMED
         order.updated_at = datetime.now()
         self._order_repo.record_history(order_id, "PRODUCING → CONFIRMED")
+        self._order_repo.save(order)
         return order
