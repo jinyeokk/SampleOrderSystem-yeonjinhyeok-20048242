@@ -1,11 +1,12 @@
 """Phase 1 테스트: 시료 관리 (SampleService)."""
 from repository.sample_repo import SampleRepository
 from service.sample_service import DuplicateSampleIdError, SampleNotFoundError, SampleService
+from tests.db_helper import make_test_conn
 from tests.harness import TestHarness, assert_eq, assert_raises, assert_true
 
 
 def _make_service() -> SampleService:
-    return SampleService(SampleRepository())
+    return SampleService(SampleRepository(make_test_conn()))
 
 
 def run_tests() -> bool:

@@ -6,7 +6,8 @@ from tests.harness import TestHarness, assert_eq, assert_raises, assert_true
 
 
 def _make_ctx() -> AppContext:
-    return AppContext()
+    from tests.db_helper import make_test_conn
+    return AppContext(make_test_conn())
 
 
 def _setup_confirmed(ctx: AppContext, sample_id: str, qty: int) -> str:
