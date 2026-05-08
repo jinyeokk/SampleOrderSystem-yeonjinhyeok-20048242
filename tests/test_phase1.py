@@ -109,14 +109,14 @@ def _test_yield_percent() -> None:
 # ── 표시 형식 ─────────────────────────────────────────────
 
 def _test_fmt_time() -> None:
-    from menu.sample_menu import _fmt_time
+    from view.sample_view import _fmt_time
     assert_eq(_fmt_time(45.0),  "45 min/ea")
     assert_eq(_fmt_time(30.0),  "30 min/ea")
     assert_eq(_fmt_time(120.0), "120 min/ea")
 
 
 def _test_fmt_stock() -> None:
-    from menu.sample_menu import _fmt_stock
+    from view.sample_view import _fmt_stock
     assert_eq(_fmt_stock(120), "120 ea")
     assert_eq(_fmt_stock(0),   "0 ea ⚠")
     assert_eq(_fmt_stock(1),   "1 ea")

@@ -1,10 +1,10 @@
 from app import AppContext
-from menu import main_menu
+from controller.main_controller import MainController
 
 
 def main() -> None:
     ctx = AppContext()
-    main_menu.run(ctx)
+    MainController(ctx).run()
 
 
 if __name__ == "__main__":

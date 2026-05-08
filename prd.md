@@ -164,3 +164,22 @@ RESERVED → CONFIRMED → RELEASE
 - 외부 ERP 연동
 - 모바일 앱
 - 알림(이메일 / SMS) 발송
+
+---
+
+## 7. 리팩토링 계획 (Post-MVP)
+
+Phase 0~6 구현 완료 후 코드 품질 및 확장성 향상을 위한 4단계 리팩토링을 진행한다.
+
+| 단계 | 내용 | 설계 문서 |
+|------|------|-----------|
+| R1 | MVC 구조 전환 — 역할 분리 (View / Controller 분리) | `design/refactor_r1_mvc.md` |
+| R2 | DB 연동 — SQLite 기반 영속성 계층 구현 (CRUD 포함) | `design/refactor_r2_database.md` |
+| R3 | 관리자 콘솔 도구 — 저장된 데이터 실시간 조회 CLI | `design/refactor_r3_admin_console.md` |
+| R4 | 더미 데이터 생성 도구 — DB 연동 테스트용 데이터 자동 생성 | `design/refactor_r4_dummy_data.md` |
+
+### 리팩토링 원칙
+
+- 기존 Phase 0~6의 **비즈니스 로직(service/)은 변경하지 않는다**
+- 각 단계는 독립적으로 브랜치를 생성하고 커밋한다 (`refactor/r1-mvc` 등)
+- 리팩토링 후에도 **전체 테스트(60건) 통과**를 유지한다

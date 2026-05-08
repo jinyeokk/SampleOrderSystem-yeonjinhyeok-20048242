@@ -1,6 +1,6 @@
 """Phase 0 테스트: 메인 화면 (AppContext 초기화 + 현황 요약 집계)."""
 from app import AppContext
-from menu.main_menu import _collect_summary, _is_yes
+from controller.main_controller import _collect_summary, _is_yes
 from tests.harness import TestHarness, assert_eq, assert_true
 
 
