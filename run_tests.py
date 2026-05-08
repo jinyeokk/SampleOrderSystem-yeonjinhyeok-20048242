@@ -6,7 +6,11 @@
 import importlib
 import sys
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+
 PHASE_MODULES: dict[str, str] = {
+    "0": "tests.test_phase0",
     "1": "tests.test_phase1",
     "2": "tests.test_phase2",
     "3": "tests.test_phase3",

@@ -1,3 +1,4 @@
+import math
 import uuid
 from datetime import datetime
 from typing import Optional
@@ -64,7 +65,8 @@ class OrderService:
             order.status = OrderStatus.CONFIRMED
             self._order_repo.record_history(order_id, "RESERVED → CONFIRMED")
         else:
-            required_qty = sample.required_production(order.quantity)
+            shortage = order.quantity - sample.stock
+            required_qty = math.ceil(shortage / (sample.yield_rate * 0.9))
             queue = ProductionQueue(
                 queue_id=uuid.uuid4().hex[:8],
                 order_id=order_id,
@@ -78,7 +80,7 @@ class OrderService:
         order.updated_at = datetime.now()
         return order
 
-    def reject(self, order_id: str, reason: str) -> Order:
+    def reject(self, order_id: str, reason: str = "") -> Order:
         order = self.get(order_id)
         if order.status != OrderStatus.RESERVED:
             raise InvalidStatusTransitionError(
