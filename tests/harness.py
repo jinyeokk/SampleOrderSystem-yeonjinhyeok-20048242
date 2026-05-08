@@ -2,6 +2,9 @@
 import sys
 from typing import Callable
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+
 
 class TestResult:
     def __init__(self, name: str, passed: bool, message: str = "") -> None:
