@@ -12,25 +12,25 @@ def _make_service() -> SampleService:
 def run_tests() -> bool:
     h = TestHarness("Phase 1 — 시료 관리")
 
-    h.run("시료 등록 후 조회 가능",                   _test_register_and_get)
-    h.run("중복 ID 등록 시 DuplicateSampleIdError",   _test_duplicate_id)
-    h.run("존재하지 않는 ID 조회 시 SampleNotFoundError", _test_not_found)
-    h.run("전체 조회는 ID 오름차순 정렬",              _test_get_all_sorted)
-    h.run("이름 부분 일치 검색",                      _test_search_by_name)
-    h.run("ID 부분 일치 검색",                        _test_search_by_id)
-    h.run("검색 대소문자 무시",                        _test_search_case_insensitive)
-    h.run("재고 증감 반영",                            _test_update_stock)
-    h.run("required_production 수율 보정 계산",        _test_required_production)
-    h.run("yield_percent 퍼센트 문자열 변환",          _test_yield_percent)
-    h.run("_fmt_time: min/ea 형식 반환",               _test_fmt_time)
-    h.run("_fmt_stock: ea 단위 및 재고 0 경고 표시",   _test_fmt_stock)
+    h.run("시료 등록 후 조회 가능",                   test_register_and_get)
+    h.run("중복 ID 등록 시 DuplicateSampleIdError",   test_duplicate_id)
+    h.run("존재하지 않는 ID 조회 시 SampleNotFoundError", test_not_found)
+    h.run("전체 조회는 ID 오름차순 정렬",              test_get_all_sorted)
+    h.run("이름 부분 일치 검색",                      test_search_by_name)
+    h.run("ID 부분 일치 검색",                        test_search_by_id)
+    h.run("검색 대소문자 무시",                        test_search_case_insensitive)
+    h.run("재고 증감 반영",                            test_update_stock)
+    h.run("required_production 수율 보정 계산",        test_required_production)
+    h.run("yield_percent 퍼센트 문자열 변환",          test_yield_percent)
+    h.run("_fmt_time: min/ea 형식 반환",               test_fmt_time)
+    h.run("_fmt_stock: ea 단위 및 재고 0 경고 표시",   test_fmt_stock)
 
     return h.report()
 
 
 # ── SampleService ──────────────────────────────────────────
 
-def _test_register_and_get() -> None:
+def test_register_and_get() -> None:
     svc = _make_service()
     svc.register("A-001", "갈륨비소 웨이퍼", 45.0, 0.92)
     sample = svc.get("A-001")
@@ -39,18 +39,18 @@ def _test_register_and_get() -> None:
     assert_eq(sample.stock, 0)
 
 
-def _test_duplicate_id() -> None:
+def test_duplicate_id() -> None:
     svc = _make_service()
     svc.register("A-001", "갈륨비소 웨이퍼", 45.0, 0.92)
     assert_raises(DuplicateSampleIdError, svc.register, "A-001", "다른 이름", 30.0, 0.88)
 
 
-def _test_not_found() -> None:
+def test_not_found() -> None:
     svc = _make_service()
     assert_raises(SampleNotFoundError, svc.get, "X-999")
 
 
-def _test_get_all_sorted() -> None:
+def test_get_all_sorted() -> None:
     svc = _make_service()
     svc.register("B-001", "인화인듐", 120.0, 0.75)
     svc.register("A-001", "갈륨비소", 45.0, 0.92)
@@ -59,7 +59,7 @@ def _test_get_all_sorted() -> None:
     assert_eq(ids, ["A-001", "A-002", "B-001"])
 
 
-def _test_search_by_name() -> None:
+def test_search_by_name() -> None:
     svc = _make_service()
     svc.register("A-001", "갈륨비소 웨이퍼", 45.0, 0.92)
     svc.register("A-002", "실리콘 기판",     30.0, 0.88)
@@ -68,7 +68,7 @@ def _test_search_by_name() -> None:
     assert_eq(results[0].sample_id, "A-001")
 
 
-def _test_search_by_id() -> None:
+def test_search_by_id() -> None:
     svc = _make_service()
     svc.register("A-001", "갈륨비소", 45.0, 0.92)
     svc.register("B-001", "실리콘",   30.0, 0.88)
@@ -77,14 +77,14 @@ def _test_search_by_id() -> None:
     assert_eq(results[0].sample_id, "B-001")
 
 
-def _test_search_case_insensitive() -> None:
+def test_search_case_insensitive() -> None:
     svc = _make_service()
     svc.register("A-001", "GaAs Wafer", 45.0, 0.92)
     assert_eq(len(svc.search("gaas")), 1)
     assert_eq(len(svc.search("WAFER")), 1)
 
 
-def _test_update_stock() -> None:
+def test_update_stock() -> None:
     svc = _make_service()
     svc.register("A-001", "갈륨비소", 45.0, 0.92)
     svc.update_stock("A-001", 100)
@@ -93,7 +93,7 @@ def _test_update_stock() -> None:
     assert_eq(svc.get("A-001").stock, 70)
 
 
-def _test_required_production() -> None:
+def test_required_production() -> None:
     svc = _make_service()
     svc.register("B-001", "인화인듐", 120.0, 0.75)
     sample = svc.get("B-001")
@@ -101,7 +101,7 @@ def _test_required_production() -> None:
     assert_eq(sample.required_production(10), 14)  # ceil(10 / 0.75)
 
 
-def _test_yield_percent() -> None:
+def test_yield_percent() -> None:
     svc = _make_service()
     svc.register("A-001", "갈륨비소", 45.0, 0.92)
     assert_eq(svc.get("A-001").yield_percent(), "92%")
@@ -109,14 +109,14 @@ def _test_yield_percent() -> None:
 
 # ── 표시 형식 ─────────────────────────────────────────────
 
-def _test_fmt_time() -> None:
+def test_fmt_time() -> None:
     from view.sample_view import _fmt_time
     assert_eq(_fmt_time(45.0),  "45 min/ea")
     assert_eq(_fmt_time(30.0),  "30 min/ea")
     assert_eq(_fmt_time(120.0), "120 min/ea")
 
 
-def _test_fmt_stock() -> None:
+def test_fmt_stock() -> None:
     from view.sample_view import _fmt_stock
     assert_eq(_fmt_stock(120), "120 ea")
     assert_eq(_fmt_stock(0),   "0 ea ⚠")

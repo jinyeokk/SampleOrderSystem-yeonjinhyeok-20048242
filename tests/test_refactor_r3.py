@@ -13,19 +13,19 @@ def _make_ctx() -> AppContext:
 def run_tests() -> bool:
     h = TestHarness("Refactor R3 — 관리자 콘솔")
 
-    h.run("빈 DB stats: 모든 값 0",           _test_stats_empty)
-    h.run("시료 등록 후 samples 조회",         _test_samples_list)
-    h.run("주문 후 orders 조회",               _test_orders_list)
-    h.run("상태 필터 orders 조회",             _test_orders_filter)
+    h.run("빈 DB stats: 모든 값 0",           test_stats_empty)
+    h.run("시료 등록 후 samples 조회",         test_samples_list)
+    h.run("주문 후 orders 조회",               test_orders_list)
+    h.run("상태 필터 orders 조회",             test_orders_filter)
     h.run("단건 order 조회",                   _test_order_detail)
     h.run("없는 주문 ID 조회 → None",         _test_order_not_found)
-    h.run("생산 큐 queue 조회",                _test_queue)
-    h.run("이력 history 조회",                 _test_history)
+    h.run("생산 큐 queue 조회",                test_queue)
+    h.run("이력 history 조회",                 test_history)
 
     return h.report()
 
 
-def _test_stats_empty() -> None:
+def test_stats_empty() -> None:
     ctx     = _make_ctx()
     samples = ctx.sample_repo.find_all()
     counts  = ctx.order_repo.count_by_status()
@@ -36,7 +36,7 @@ def _test_stats_empty() -> None:
     assert_eq(len(waiting), 0)
 
 
-def _test_samples_list() -> None:
+def test_samples_list() -> None:
     ctx = _make_ctx()
     ctx.sample_service.register("A-001", "갈륨비소", 45.0, 0.92)
     ctx.sample_service.register("B-001", "인화인듐", 120.0, 0.75)
@@ -46,7 +46,7 @@ def _test_samples_list() -> None:
     assert_eq(samples[0].sample_id, "A-001")
 
 
-def _test_orders_list() -> None:
+def test_orders_list() -> None:
     ctx = _make_ctx()
     ctx.sample_service.register("A-001", "갈륨비소", 45.0, 0.92)
     ctx.order_service.place_order("고객1", "A-001", 10)
@@ -56,7 +56,7 @@ def _test_orders_list() -> None:
     assert_eq(len(orders), 2)
 
 
-def _test_orders_filter() -> None:
+def test_orders_filter() -> None:
     ctx = _make_ctx()
     ctx.sample_service.register("A-001", "갈륨비소", 45.0, 0.92)
     ctx.sample_service.update_stock("A-001", 100)
@@ -70,7 +70,7 @@ def _test_orders_filter() -> None:
     assert_eq(len(confirmed), 1)
 
 
-def _test_order_detail() -> None:
+def test_order_detail() -> None:
     ctx = _make_ctx()
     ctx.sample_service.register("A-001", "갈륨비소", 45.0, 0.92)
     order = ctx.order_service.place_order("(주)반도체코리아", "A-001", 30)
@@ -82,13 +82,13 @@ def _test_order_detail() -> None:
     assert_eq(found.status, OrderStatus.RESERVED)
 
 
-def _test_order_not_found() -> None:
+def test_order_not_found() -> None:
     ctx   = _make_ctx()
     found = ctx.order_repo.find_by_id("ORD-00000000-000")
     assert_true(found is None)
 
 
-def _test_queue() -> None:
+def test_queue() -> None:
     ctx = _make_ctx()
     ctx.sample_service.register("B-001", "인화인듐", 120.0, 0.75)
     order = ctx.order_service.place_order("고객", "B-001", 20)
@@ -99,7 +99,7 @@ def _test_queue() -> None:
     assert_eq(waiting[0].order_id, order.order_id)
 
 
-def _test_history() -> None:
+def test_history() -> None:
     ctx = _make_ctx()
     ctx.sample_service.register("A-001", "갈륨비소", 45.0, 0.92)
     ctx.sample_service.update_stock("A-001", 100)
