@@ -1,3 +1,4 @@
+import math
 import uuid
 from datetime import datetime
 from typing import Optional
@@ -65,7 +66,7 @@ class OrderService:
             self._order_repo.record_history(order_id, "RESERVED → CONFIRMED")
         else:
             shortage = order.quantity - sample.stock
-            required_qty = sample.required_production(shortage)
+            required_qty = math.ceil(shortage / (sample.yield_rate * 0.9))
             queue = ProductionQueue(
                 queue_id=uuid.uuid4().hex[:8],
                 order_id=order_id,

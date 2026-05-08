@@ -73,7 +73,7 @@ def _test_approve_producing() -> None:
 
 
 def _test_approve_shortage_based_qty() -> None:
-    """부족분 기준으로 생산 필요량 계산: ceil(shortage / yield_rate)."""
+    """부족분 기준 + 오차 10% 반영: ceil(shortage / (yield_rate × 0.9))."""
     sample_svc, order_svc, prod_repo = _make_services()
     sample_svc.register("B-001", "인화인듐", 120.0, 0.75)
     sample_svc.update_stock("B-001", 10)   # stock=10, order=30, shortage=20
@@ -82,12 +82,12 @@ def _test_approve_shortage_based_qty() -> None:
     order_svc.approve(order.order_id)
 
     queue = prod_repo.find_by_order(order.order_id)
-    expected = math.ceil(20 / 0.75)        # ceil(shortage=20 / yield=0.75) = 27
+    expected = math.ceil(20 / (0.75 * 0.9))   # ceil(20 / 0.675) = 30
     assert_eq(queue.required_qty, expected)
 
 
 def _test_approve_zero_stock() -> None:
-    """재고 0이면 전체 주문 수량이 부족분: ceil(order_qty / yield_rate)."""
+    """재고 0이면 전체 수량이 부족분: ceil(order_qty / (yield_rate × 0.9))."""
     sample_svc, order_svc, prod_repo = _make_services()
     sample_svc.register("B-001", "인화인듐", 120.0, 0.75)  # stock=0
 
@@ -95,7 +95,7 @@ def _test_approve_zero_stock() -> None:
     order_svc.approve(order.order_id)
 
     queue    = prod_repo.find_by_order(order.order_id)
-    expected = math.ceil(20 / 0.75)   # ceil(20 / 0.75) = 27
+    expected = math.ceil(20 / (0.75 * 0.9))   # ceil(20 / 0.675) = 30
     assert_eq(queue.required_qty, expected)
 
 
