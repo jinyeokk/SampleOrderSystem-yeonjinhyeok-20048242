@@ -1,6 +1,6 @@
 """Phase 4 테스트: 모니터링 (주문량 확인 / 재고량 확인)."""
 from app import AppContext
-from menu.monitoring_menu import _stock_label
+from controller.monitoring_controller import _stock_label
 from model.order import OrderStatus
 from repository.order_repo import OrderRepository
 from repository.production_repo import ProductionRepository

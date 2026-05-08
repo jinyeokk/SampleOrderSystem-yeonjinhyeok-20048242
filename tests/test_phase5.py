@@ -3,7 +3,7 @@ import math
 import time
 
 from app import AppContext
-from menu.production_menu import _progress_bar
+from view.production_view import _progress_bar
 from model.order import OrderStatus
 from model.production import QueueStatus
 from repository.order_repo import OrderRepository
