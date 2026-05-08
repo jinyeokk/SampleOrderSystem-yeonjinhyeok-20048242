@@ -10,13 +10,14 @@ if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 
 PHASE_MODULES: dict[str, str] = {
-    "0": "tests.test_phase0",
-    "1": "tests.test_phase1",
-    "2": "tests.test_phase2",
-    "3": "tests.test_phase3",
-    "4": "tests.test_phase4",
-    "5": "tests.test_phase5",
-    "6": "tests.test_phase6",
+    "0":  "tests.test_phase0",
+    "1":  "tests.test_phase1",
+    "2":  "tests.test_phase2",
+    "3":  "tests.test_phase3",
+    "4":  "tests.test_phase4",
+    "5":  "tests.test_phase5",
+    "6":  "tests.test_phase6",
+    "r3": "tests.test_refactor_r3",
 }
 
 
