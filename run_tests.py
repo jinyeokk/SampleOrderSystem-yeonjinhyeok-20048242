@@ -18,6 +18,7 @@ PHASE_MODULES: dict[str, str] = {
     "5":  "tests.test_phase5",
     "6":  "tests.test_phase6",
     "r3": "tests.test_refactor_r3",
+    "r4": "tests.test_refactor_r4",
 }
 
 
