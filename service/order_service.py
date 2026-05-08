@@ -78,6 +78,7 @@ class OrderService:
             self._order_repo.record_history(order_id, "RESERVED → PRODUCING")
 
         order.updated_at = datetime.now()
+        self._order_repo.save(order)
         return order
 
     def reject(self, order_id: str, reason: str = "") -> Order:
@@ -90,6 +91,7 @@ class OrderService:
         order.reject_reason = reason
         order.updated_at = datetime.now()
         self._order_repo.record_history(order_id, "RESERVED → REJECTED")
+        self._order_repo.save(order)
         return order
 
     def _generate_order_id(self) -> str:

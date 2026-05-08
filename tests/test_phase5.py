@@ -16,29 +16,30 @@ from tests.harness import TestHarness, assert_eq, assert_true
 
 
 def _make_ctx() -> AppContext:
-    return AppContext()
+    from tests.db_helper import make_test_conn
+    return AppContext(make_test_conn())
 
 
 def run_tests() -> bool:
     h = TestHarness("Phase 5 — 생산라인")
 
-    h.run("실 생산량: ceil(부족분 / (수율 × 0.9))",   _test_required_qty_formula)
-    h.run("재고 0 → 전량 부족분 기준 실 생산량",       _test_required_qty_zero_stock)
-    h.run("생산 완료 후 CONFIRMED 전환",               _test_complete_confirmed)
-    h.run("생산 완료 후 재고 보정",                    _test_complete_stock)
-    h.run("PRODUCING 없으면 RUNNING 아님",             _test_not_running)
-    h.run("PRODUCING 존재 시 RUNNING",                 _test_running)
-    h.run("대기 큐 FIFO 순서 (queued_at 오름차순)",    _test_fifo_order)
-    h.run("진행률 바 — 0%",                           _test_progress_bar_zero)
-    h.run("진행률 바 — 50%",                          _test_progress_bar_half)
-    h.run("진행률 바 — 100%",                         _test_progress_bar_full)
+    h.run("실 생산량: ceil(부족분 / (수율 × 0.9))",   test_required_qty_formula)
+    h.run("재고 0 → 전량 부족분 기준 실 생산량",       test_required_qty_zero_stock)
+    h.run("생산 완료 후 CONFIRMED 전환",               test_complete_confirmed)
+    h.run("생산 완료 후 재고 보정",                    test_complete_stock)
+    h.run("PRODUCING 없으면 RUNNING 아님",             test_not_running)
+    h.run("PRODUCING 존재 시 RUNNING",                 test_running)
+    h.run("대기 큐 FIFO 순서 (queued_at 오름차순)",    test_fifo_order)
+    h.run("진행률 바 — 0%",                           test_progress_bar_zero)
+    h.run("진행률 바 — 50%",                          test_progress_bar_half)
+    h.run("진행률 바 — 100%",                         test_progress_bar_full)
 
     return h.report()
 
 
 # ── 실 생산량 공식 ────────────────────────────────────────
 
-def _test_required_qty_formula() -> None:
+def test_required_qty_formula() -> None:
     """stock=10, order=30, shortage=20, yield=0.75 → ceil(20/(0.75×0.9)) = 30."""
     ctx = _make_ctx()
     ctx.sample_service.register("B-001", "인화인듐", 120.0, 0.75)
@@ -52,7 +53,7 @@ def _test_required_qty_formula() -> None:
     assert_eq(queue.required_qty, expected)
 
 
-def _test_required_qty_zero_stock() -> None:
+def test_required_qty_zero_stock() -> None:
     """stock=0, order=20, shortage=20, yield=0.75 → ceil(20/(0.75×0.9)) = 30."""
     ctx = _make_ctx()
     ctx.sample_service.register("B-001", "인화인듐", 120.0, 0.75)
@@ -67,7 +68,7 @@ def _test_required_qty_zero_stock() -> None:
 
 # ── 생산 완료 ─────────────────────────────────────────────
 
-def _test_complete_confirmed() -> None:
+def test_complete_confirmed() -> None:
     ctx = _make_ctx()
     ctx.sample_service.register("B-001", "인화인듐", 120.0, 0.75)
 
@@ -78,7 +79,7 @@ def _test_complete_confirmed() -> None:
     assert_eq(result.status, OrderStatus.CONFIRMED)
 
 
-def _test_complete_stock() -> None:
+def test_complete_stock() -> None:
     """stock=0, required=30, order=20 → 완료 후 stock = 0 + 30 - 20 = 10."""
     ctx = _make_ctx()
     ctx.sample_service.register("B-001", "인화인듐", 120.0, 0.75)
@@ -97,7 +98,7 @@ def _test_complete_stock() -> None:
 
 # ── RUNNING / STOP ────────────────────────────────────────
 
-def _test_not_running() -> None:
+def test_not_running() -> None:
     ctx = _make_ctx()
     ctx.sample_service.register("A-001", "갈륨비소", 45.0, 0.92)
     ctx.sample_service.update_stock("A-001", 100)
@@ -108,7 +109,7 @@ def _test_not_running() -> None:
     assert_eq(len(items), 0, "CONFIRMED 전환된 주문은 생산라인에 없음")
 
 
-def _test_running() -> None:
+def test_running() -> None:
     ctx = _make_ctx()
     ctx.sample_service.register("B-001", "인화인듐", 120.0, 0.75)
     order = ctx.order_service.place_order("고객", "B-001", 10)
@@ -120,7 +121,7 @@ def _test_running() -> None:
 
 # ── FIFO ──────────────────────────────────────────────────
 
-def _test_fifo_order() -> None:
+def test_fifo_order() -> None:
     ctx = _make_ctx()
     ctx.sample_service.register("B-001", "인화인듐", 120.0, 0.75)
 
@@ -144,17 +145,17 @@ def _test_fifo_order() -> None:
 
 # ── 진행률 바 ─────────────────────────────────────────────
 
-def _test_progress_bar_zero() -> None:
+def test_progress_bar_zero() -> None:
     bar = _progress_bar(0, 30)
     assert_eq(bar, "░" * 20)
 
 
-def _test_progress_bar_half() -> None:
+def test_progress_bar_half() -> None:
     bar = _progress_bar(15, 30)
     assert_eq(bar, "▓" * 10 + "░" * 10)
 
 
-def _test_progress_bar_full() -> None:
+def test_progress_bar_full() -> None:
     bar = _progress_bar(30, 30)
     assert_eq(bar, "▓" * 20)
 

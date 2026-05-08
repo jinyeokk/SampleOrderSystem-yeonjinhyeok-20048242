@@ -21,7 +21,8 @@ class ReleaseView(BaseView):
         )
         print(TABLE_DIVIDER)
         for i, o in enumerate(orders, 1):
-            sample_name = sample_map.get(o.sample_id, o.sample_id)
+            sample = sample_map.get(o.sample_id)
+            sample_name = sample.name if sample else o.sample_id
             print(
                 f" {i:>4}  "
                 f"{o.order_id:<18}"
