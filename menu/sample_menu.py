@@ -20,7 +20,7 @@ def run(ctx: AppContext) -> None:
     while True:
         choice = input_menu("시료 관리", [
             ("1", "시료 등록"),
-            ("2", "시료 조회"),
+            ("2", "시료 목록"),
             ("3", "시료 검색"),
             ("0", "메인 메뉴로 돌아가기"),
         ])
@@ -83,7 +83,7 @@ def _print_sample_table(title: str, samples) -> None:
     print(TABLE_DIVIDER)
     print(f"  {title}")
     print(TABLE_DIVIDER)
-    print(f" {'ID':<10}{ljust_display('이름', 20)}{'평균생산시간':>14}{'수율':>6}{'재고':>10}")
+    print(f" {'ID':<10}{ljust_display('시료명', 20)}{'평균생산시간':>14}{'수율':>6}{'현재 재고':>10}")
     print(TABLE_DIVIDER)
     for s in samples:
         print(
