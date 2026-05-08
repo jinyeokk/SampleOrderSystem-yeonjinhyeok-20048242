@@ -18,42 +18,42 @@ def _make_ctx() -> AppContext:
 def run_tests() -> bool:
     h = TestHarness("Phase 4 — 모니터링")
 
-    h.run("재고 0 → 고갈",                          _test_stock_label_고갈)
-    h.run("재고 > 0, 재고 < 예약 수량 → 부족",      _test_stock_label_부족)
-    h.run("재고 >= 예약 수량 → 여유",               _test_stock_label_여유)
-    h.run("예약 수량 0이면 재고 > 0 → 여유",        _test_stock_label_no_reserved)
-    h.run("REJECTED 주문은 건수에서 제외",           _test_order_count_excludes_rejected)
-    h.run("예약 수량은 RESERVED 상태 합계만",        _test_reserved_qty_reserved_only)
-    h.run("시료별 예약 수량 집계",                   _test_reserved_qty_per_sample)
+    h.run("재고 0 → 고갈",                          test_stock_label_고갈)
+    h.run("재고 > 0, 재고 < 예약 수량 → 부족",      test_stock_label_부족)
+    h.run("재고 >= 예약 수량 → 여유",               test_stock_label_여유)
+    h.run("예약 수량 0이면 재고 > 0 → 여유",        test_stock_label_no_reserved)
+    h.run("REJECTED 주문은 건수에서 제외",           test_order_count_excludes_rejected)
+    h.run("예약 수량은 RESERVED 상태 합계만",        test_reserved_qty_reserved_only)
+    h.run("시료별 예약 수량 집계",                   test_reserved_qty_per_sample)
 
     return h.report()
 
 
 # ── _stock_label ──────────────────────────────────────────
 
-def _test_stock_label_고갈() -> None:
+def test_stock_label_고갈() -> None:
     assert_eq(_stock_label(0, 0),  "고갈")
     assert_eq(_stock_label(0, 10), "고갈")
 
 
-def _test_stock_label_부족() -> None:
+def test_stock_label_부족() -> None:
     assert_eq(_stock_label(5,  10), "부족")
     assert_eq(_stock_label(1, 100), "부족")
 
 
-def _test_stock_label_여유() -> None:
+def test_stock_label_여유() -> None:
     assert_eq(_stock_label(10, 10), "여유")
     assert_eq(_stock_label(20, 10), "여유")
     assert_eq(_stock_label(100, 0), "여유")
 
 
-def _test_stock_label_no_reserved() -> None:
+def test_stock_label_no_reserved() -> None:
     assert_eq(_stock_label(5, 0), "여유")
 
 
 # ── 주문 건수 집계 ────────────────────────────────────────
 
-def _test_order_count_excludes_rejected() -> None:
+def test_order_count_excludes_rejected() -> None:
     ctx = _make_ctx()
     ctx.sample_service.register("A-001", "갈륨비소", 45.0, 0.92)
     ctx.sample_service.update_stock("A-001", 100)
@@ -77,7 +77,7 @@ def _test_order_count_excludes_rejected() -> None:
 
 # ── 예약 수량 집계 ────────────────────────────────────────
 
-def _test_reserved_qty_reserved_only() -> None:
+def test_reserved_qty_reserved_only() -> None:
     ctx = _make_ctx()
     ctx.sample_service.register("A-001", "갈륨비소", 45.0, 0.92)
     ctx.sample_service.update_stock("A-001", 100)
@@ -92,7 +92,7 @@ def _test_reserved_qty_reserved_only() -> None:
     assert_eq(reserved_qty, 10, "CONFIRMED 전환된 주문은 예약 수량에서 제외")
 
 
-def _test_reserved_qty_per_sample() -> None:
+def test_reserved_qty_per_sample() -> None:
     ctx = _make_ctx()
     ctx.sample_service.register("A-001", "갈륨비소", 45.0, 0.92)
     ctx.sample_service.register("B-001", "인화인듐", 120.0, 0.75)

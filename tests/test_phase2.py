@@ -24,18 +24,18 @@ def _make_services():
 def run_tests() -> bool:
     h = TestHarness("Phase 2 — 시료 주문")
 
-    h.run("주문 생성 후 RESERVED 상태",              _test_place_order_reserved)
-    h.run("존재하지 않는 시료 ID → SampleNotFoundError", _test_invalid_sample_id)
-    h.run("주문 ID 형식 ORD-YYYYMMDD-NNN",           _test_order_id_format)
-    h.run("당일 복수 주문 시 순번 증가",              _test_order_id_sequence)
-    h.run("주문 필드 값 저장 확인",                   _test_order_fields)
+    h.run("주문 생성 후 RESERVED 상태",              test_place_order_reserved)
+    h.run("존재하지 않는 시료 ID → SampleNotFoundError", test_invalid_sample_id)
+    h.run("주문 ID 형식 ORD-YYYYMMDD-NNN",           test_order_id_format)
+    h.run("당일 복수 주문 시 순번 증가",              test_order_id_sequence)
+    h.run("주문 필드 값 저장 확인",                   test_order_fields)
 
     return h.report()
 
 
 # ── OrderService ───────────────────────────────────────────
 
-def _test_place_order_reserved() -> None:
+def test_place_order_reserved() -> None:
     sample_svc, order_svc = _make_services()
     sample_svc.register("A-001", "갈륨비소", 45.0, 0.92)
 
@@ -44,12 +44,12 @@ def _test_place_order_reserved() -> None:
     assert_eq(order.status, OrderStatus.RESERVED)
 
 
-def _test_invalid_sample_id() -> None:
+def test_invalid_sample_id() -> None:
     _, order_svc = _make_services()
     assert_raises(SampleNotFoundError, order_svc.place_order, "고객", "X-999", 10)
 
 
-def _test_order_id_format() -> None:
+def test_order_id_format() -> None:
     sample_svc, order_svc = _make_services()
     sample_svc.register("A-001", "갈륨비소", 45.0, 0.92)
 
@@ -60,7 +60,7 @@ def _test_order_id_format() -> None:
     assert_true(order.order_id.endswith("-001"), f"첫 순번 불일치: {order.order_id}")
 
 
-def _test_order_id_sequence() -> None:
+def test_order_id_sequence() -> None:
     sample_svc, order_svc = _make_services()
     sample_svc.register("A-001", "갈륨비소", 45.0, 0.92)
 
@@ -73,7 +73,7 @@ def _test_order_id_sequence() -> None:
     assert_true(o3.order_id.endswith("-003"), o3.order_id)
 
 
-def _test_order_fields() -> None:
+def test_order_fields() -> None:
     sample_svc, order_svc = _make_services()
     sample_svc.register("A-001", "갈륨비소", 45.0, 0.92)
 

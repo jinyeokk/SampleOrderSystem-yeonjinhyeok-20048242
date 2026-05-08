@@ -24,31 +24,31 @@ def _make_ctx() -> AppContext:
 def run_tests() -> bool:
     h = TestHarness("Refactor R4 — 더미 데이터 생성")
 
-    h.run("상태 분포 목록 — 총 건수 일치",          _test_status_list_count)
-    h.run("상태 분포 목록 — 모든 상태 포함",         _test_status_list_coverage)
-    h.run("시료 생성 — 프리셋 N종 등록",             _test_generate_samples)
-    h.run("주문 생성 후 RESERVED 상태",             _test_generate_orders_reserved)
-    h.run("상태 전이 — CONFIRMED 정상",             _test_transition_confirmed)
-    h.run("상태 전이 — PRODUCING (재고 0)",          _test_transition_producing)
-    h.run("상태 전이 — RELEASE",                    _test_transition_release)
-    h.run("상태 전이 — REJECTED",                   _test_transition_rejected)
-    h.run("ensure_stock — 부족 시 재고 보충",        _test_ensure_stock)
-    h.run("drain_stock — 재고 0으로 소진",           _test_drain_stock)
-    h.run("seed 고정 시 재현 가능한 결과",            _test_seed_reproducible)
-    h.run("reset — 전체 테이블 초기화",              _test_reset)
+    h.run("상태 분포 목록 — 총 건수 일치",          test_status_list_count)
+    h.run("상태 분포 목록 — 모든 상태 포함",         test_status_list_coverage)
+    h.run("시료 생성 — 프리셋 N종 등록",             test_generate_samples)
+    h.run("주문 생성 후 RESERVED 상태",             test_generate_orders_reserved)
+    h.run("상태 전이 — CONFIRMED 정상",             test_transition_confirmed)
+    h.run("상태 전이 — PRODUCING (재고 0)",          test_transition_producing)
+    h.run("상태 전이 — RELEASE",                    test_transition_release)
+    h.run("상태 전이 — REJECTED",                   test_transition_rejected)
+    h.run("ensure_stock — 부족 시 재고 보충",        test_ensure_stock)
+    h.run("drain_stock — 재고 0으로 소진",           test_drain_stock)
+    h.run("seed 고정 시 재현 가능한 결과",            test_seed_reproducible)
+    h.run("reset — 전체 테이블 초기화",              test_reset)
 
     return h.report()
 
 
 # ── 분포 ──────────────────────────────────────────────────
 
-def _test_status_list_count() -> None:
+def test_status_list_count() -> None:
     rng = random.Random(42)
     lst = _build_status_list(15, rng)
     assert_eq(len(lst), 15)
 
 
-def _test_status_list_coverage() -> None:
+def test_status_list_coverage() -> None:
     rng = random.Random(1)
     lst = _build_status_list(20, rng)
     statuses = set(lst)
@@ -58,7 +58,7 @@ def _test_status_list_coverage() -> None:
 
 # ── 시료 / 주문 생성 ──────────────────────────────────────
 
-def _test_generate_samples() -> None:
+def test_generate_samples() -> None:
     ctx = _make_ctx()
     rng = random.Random(0)
     ids = _generate_samples(ctx, 3, rng)
@@ -67,7 +67,7 @@ def _test_generate_samples() -> None:
         assert_true(ctx.sample_repo.exists(sid))
 
 
-def _test_generate_orders_reserved() -> None:
+def test_generate_orders_reserved() -> None:
     ctx = _make_ctx()
     rng = random.Random(0)
     ids = _generate_samples(ctx, 3, rng)
@@ -79,7 +79,7 @@ def _test_generate_orders_reserved() -> None:
 
 # ── 상태 전이 ─────────────────────────────────────────────
 
-def _test_transition_confirmed() -> None:
+def test_transition_confirmed() -> None:
     ctx = _make_ctx()
     rng = random.Random(0)
     _generate_samples(ctx, 3, rng)
@@ -92,7 +92,7 @@ def _test_transition_confirmed() -> None:
     assert_eq(updated.status, OrderStatus.CONFIRMED)
 
 
-def _test_transition_producing() -> None:
+def test_transition_producing() -> None:
     ctx = _make_ctx()
     rng = random.Random(0)
     _generate_samples(ctx, 3, rng)
@@ -105,7 +105,7 @@ def _test_transition_producing() -> None:
     assert_eq(updated.status, OrderStatus.PRODUCING)
 
 
-def _test_transition_release() -> None:
+def test_transition_release() -> None:
     ctx = _make_ctx()
     rng = random.Random(0)
     _generate_samples(ctx, 3, rng)
@@ -119,7 +119,7 @@ def _test_transition_release() -> None:
     assert_eq(updated.status, OrderStatus.RELEASE)
 
 
-def _test_transition_rejected() -> None:
+def test_transition_rejected() -> None:
     ctx = _make_ctx()
     rng = random.Random(0)
     _generate_samples(ctx, 3, rng)
@@ -133,7 +133,7 @@ def _test_transition_rejected() -> None:
 
 # ── 재고 헬퍼 ─────────────────────────────────────────────
 
-def _test_ensure_stock() -> None:
+def test_ensure_stock() -> None:
     ctx = _make_ctx()
     rng = random.Random(0)
     _generate_samples(ctx, 3, rng)
@@ -143,7 +143,7 @@ def _test_ensure_stock() -> None:
     assert_true(ctx.sample_service.get("A-001").stock >= 50)
 
 
-def _test_drain_stock() -> None:
+def test_drain_stock() -> None:
     ctx = _make_ctx()
     rng = random.Random(0)
     _generate_samples(ctx, 3, rng)
@@ -155,7 +155,7 @@ def _test_drain_stock() -> None:
 
 # ── seed / reset ──────────────────────────────────────────
 
-def _test_seed_reproducible() -> None:
+def test_seed_reproducible() -> None:
     def _run_with_seed(seed: int) -> list[OrderStatus]:
         ctx = _make_ctx()
         rng = random.Random(seed)
@@ -168,7 +168,7 @@ def _test_seed_reproducible() -> None:
     assert_eq(result1, result2, "같은 seed → 동일한 결과")
 
 
-def _test_reset() -> None:
+def test_reset() -> None:
     ctx  = _make_ctx()
     conn = ctx.sample_repo._conn
 
