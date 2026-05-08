@@ -20,6 +20,11 @@ def center_display(text: str, width: int, fill: str = " ") -> str:
     return fill * left + text + fill * (pad - left)
 
 
+def rjust_display(text: str, width: int, fill: str = " ") -> str:
+    pad = max(0, width - display_width(text))
+    return fill * pad + text
+
+
 def print_divider() -> None:
     print(TABLE_DIVIDER)
 
